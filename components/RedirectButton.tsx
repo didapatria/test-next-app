@@ -1,6 +1,10 @@
+'use client';
+
 import Link from 'next/link';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { Direction, DIRECTION } from '../types/Direction';
+import { useStore } from '@/store/useStore';
+import { THEME } from '@/types/Theme';
 
 interface RedirectButtonProps {
   href: string;
@@ -15,13 +19,27 @@ export default function RedirectButton({
   label,
   className = '',
 }: RedirectButtonProps) {
+  const { theme } = useStore();
+
   return (
     <Link
       href={href}
-      className={`flex flex-row-reverse items-center rounded-full bg-slate-500 text-slate-100 transition duration-500 ease-in-out hover:flex-row hover:bg-gradient-to-r ${direction === DIRECTION.BACK ? 'hover:from-slate-700 hover:to-transparent' : 'hover:from-transparent hover:to-slate-700'} hover:text-slate-200 ${className}`}
+      className={`flex flex-row-reverse items-center rounded-full shadow-md transition duration-500 ease-in-out hover:flex-row hover:bg-gradient-to-r ${
+        theme === THEME.DARK
+          ? `bg-gray-800 text-gray-100 ${
+              direction === DIRECTION.BACK
+                ? 'hover:from-gray-900 hover:to-transparent'
+                : 'hover:from-transparent hover:to-gray-900'
+            } hover:text-gray-200`
+          : `bg-gray-400 text-white ${
+              direction === DIRECTION.BACK
+                ? 'hover:from-gray-500 hover:to-transparent'
+                : 'hover:from-transparent hover:to-gray-500'
+            } hover:text-white`
+      } ${className}`}
     >
       {direction === DIRECTION.BACK && (
-        <div className="rounded-full bg-slate-500 p-2">
+        <div className={`rounded-full p-2 ${theme === THEME.DARK ? 'bg-gray-800' : 'bg-gray-400'}`}>
           <FaChevronLeft />
         </div>
       )}
@@ -29,7 +47,7 @@ export default function RedirectButton({
         {direction === DIRECTION.BACK ? 'Back' : 'Go'} to {label}
       </span>
       {direction === DIRECTION.FORWARD && (
-        <div className="rounded-full bg-slate-500 p-2">
+        <div className={`rounded-full p-2 ${theme === THEME.DARK ? 'bg-gray-800' : 'bg-gray-400'}`}>
           <FaChevronRight />
         </div>
       )}

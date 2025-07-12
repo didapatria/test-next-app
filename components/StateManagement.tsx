@@ -2,6 +2,7 @@
 
 import { THEME } from '@/types/Theme';
 import { useStore } from '@/store/useStore';
+import LoginModal from './LoginModal';
 
 export default function StateManagement() {
   const {
@@ -9,22 +10,19 @@ export default function StateManagement() {
     user,
     theme,
     isLoading,
+    isLoginModalOpen,
     increment,
     decrement,
     reset,
-    setUser,
     logout,
     setTheme,
     setLoading,
+    openLoginModal,
+    closeLoginModal,
   } = useStore();
 
   const handleLogin = () => {
-    setUser({
-      id: '1',
-      name: 'Dida Patria',
-      email: 'didapatria3@gmail.com',
-      isAuthenticated: true,
-    });
+    openLoginModal();
   };
 
   const toggleTheme = () => {
@@ -38,7 +36,7 @@ export default function StateManagement() {
 
   return (
     <div
-      className={`w-full space-y-4 rounded-lg p-6 shadow-lg sm:w-2/3 md:w-1/2 ${theme === THEME.DARK ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
+      className={`my-4 w-full space-y-4 rounded-lg p-6 shadow-lg sm:w-2/3 md:w-1/2 ${theme === THEME.DARK ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
     >
       <div className="space-y-4">
         <h3 className="text-xl font-semibold">Counter: {count}</h3>
@@ -113,6 +111,8 @@ export default function StateManagement() {
           </button>
         )}
       </div>
+
+      <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
     </div>
   );
 }
