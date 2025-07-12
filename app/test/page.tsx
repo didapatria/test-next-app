@@ -12,9 +12,9 @@ export default function Test() {
         className="absolute top-4 left-4"
       />
       <h1 className="text-3xl font-bold">Test</h1>
-      <ol className="w-full list-inside list-decimal space-y-4 rounded-lg bg-white p-4 text-left shadow-lg sm:w-2/3 md:w-1/2">
+      <ol className="w-full list-inside list-decimal space-y-4 rounded-lg bg-white p-6 text-left shadow-lg sm:w-2/3 md:w-1/2">
         <li>
-          <Link href="/test/test1">Test 1</Link>
+          <Link href="/test/state-management">State Management</Link>
         </li>
         <li>
           <Link href="/test/test2">Test 2</Link>
