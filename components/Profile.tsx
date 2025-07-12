@@ -23,7 +23,7 @@ export default function Profile() {
           >
             <span>Go to</span>
             <Link
-              href="/test/test3"
+              href="/test/state-management"
               className={`transition-colors hover:underline ${
                 theme === THEME.DARK
                   ? 'text-blue-400 hover:text-blue-500'
