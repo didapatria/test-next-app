@@ -7,7 +7,7 @@ import { DIRECTION } from '@/types/Direction';
 import { THEME } from '@/types/Theme';
 
 export default function StateManagementPage() {
-  const { theme } = useStore();
+  const { theme } = useStore.themeStore.theme();
 
   return (
     <div

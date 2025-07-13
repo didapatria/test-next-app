@@ -7,7 +7,7 @@ import { useStore } from '@/store/useStore';
 import { THEME } from '@/types/Theme';
 
 export default function ProfilePage() {
-  const { theme } = useStore();
+  const { theme } = useStore.themeStore.theme();
 
   return (
     <div

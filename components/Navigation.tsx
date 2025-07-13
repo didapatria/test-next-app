@@ -3,20 +3,15 @@
 import Link from 'next/link';
 import { useStore } from '@/store/useStore';
 import { THEME } from '@/types/Theme';
-import { useState } from 'react';
 import LoginModal from './LoginModal';
 
 export default function Navigation() {
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
-  const { user, theme } = useStore();
+  const { theme } = useStore.themeStore.theme();
+  const { user } = useStore.userStore.user();
+  const { isLoginModalOpen, openLoginModal, closeLoginModal } = useStore.userStore.ui.modal();
 
   const handleLogin = () => {
-    setIsLoginModalOpen(true);
-  };
-
-  const closeLoginModal = () => {
-    setIsLoginModalOpen(false);
+    openLoginModal();
   };
 
   return (

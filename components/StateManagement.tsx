@@ -5,21 +5,11 @@ import { useStore } from '@/store/useStore';
 import LoginModal from './LoginModal';
 
 export default function StateManagement() {
-  const {
-    count,
-    user,
-    theme,
-    isLoading,
-    isLoginModalOpen,
-    increment,
-    decrement,
-    reset,
-    logout,
-    setTheme,
-    setLoading,
-    openLoginModal,
-    closeLoginModal,
-  } = useStore();
+  const { count, increment, decrement, reset } = useStore.counterStore.counter();
+  const { theme, setTheme } = useStore.themeStore.theme();
+  const { user, logout } = useStore.userStore.user();
+  const { isLoginModalOpen, openLoginModal, closeLoginModal } = useStore.userStore.ui.modal();
+  const { isLoading, startLoading, stopLoading } = useStore.uiStore.loading();
 
   const handleLogin = () => {
     openLoginModal();
@@ -30,8 +20,8 @@ export default function StateManagement() {
   };
 
   const simulateLoading = () => {
-    setLoading(true);
-    setTimeout(() => setLoading(false), 2000);
+    startLoading();
+    setTimeout(() => stopLoading(), 2000);
   };
 
   return (

@@ -7,7 +7,7 @@ import { THEME } from '@/types/Theme';
 import Link from 'next/link';
 
 export default function Test() {
-  const { theme } = useStore();
+  const { theme } = useStore.themeStore.theme();
 
   return (
     <div

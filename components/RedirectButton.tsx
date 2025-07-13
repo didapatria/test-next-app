@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { Direction, DIRECTION } from '../types/Direction';
+import { Direction, DIRECTION } from '@/types/Direction';
 import { useStore } from '@/store/useStore';
 import { THEME } from '@/types/Theme';
 
@@ -19,7 +19,7 @@ export default function RedirectButton({
   label,
   className = '',
 }: RedirectButtonProps) {
-  const { theme } = useStore();
+  const { theme } = useStore.themeStore.theme();
 
   return (
     <Link

@@ -11,19 +11,19 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+  const { theme } = useStore.themeStore.theme();
   const {
-    theme,
     loginForm,
     loginFormErrors,
     passwordValidation,
-    isPasswordVisible,
     setLoginFormData,
     setLoginFormErrors,
     validatePasswordRealTime,
     submitLoginForm,
     clearLoginForm,
-    togglePasswordVisibility,
-  } = useStore();
+  } = useStore.userStore.user();
+  const { isPasswordVisible, togglePasswordVisibility } =
+    useStore.userStore.ui.passwordVisibility();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

@@ -9,7 +9,7 @@ export default function Body({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { theme } = useStore();
+  const { theme } = useStore.themeStore.theme();
 
   return (
     <body

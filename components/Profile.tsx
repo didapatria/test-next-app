@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useStore } from '../store/useStore';
+import { useStore } from '@/store/useStore';
 import { THEME } from '@/types/Theme';
 
 export default function Profile() {
-  const { user, theme, logout } = useStore();
+  const { theme } = useStore.themeStore.theme();
+  const { user, logout } = useStore.userStore.user();
 
   if (!user.isAuthenticated) {
     return (
