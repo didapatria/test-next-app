@@ -3,6 +3,7 @@
 import { useStore } from '@/store/useStore';
 import { THEME } from '@/types/Theme';
 import Navigation from './Navigation';
+import ToastProvider from './ToastProvider';
 
 export default function Body({
   children,
@@ -19,6 +20,7 @@ export default function Body({
     >
       <Navigation />
       {children}
+      <ToastProvider />
     </body>
   );
 }

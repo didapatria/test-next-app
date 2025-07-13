@@ -8,7 +8,7 @@ export default function StateManagement() {
   const { count, increment, decrement, reset } = useStore.counterStore.counter();
   const { theme, setTheme } = useStore.themeStore.theme();
   const { user, logout } = useStore.userStore.user();
-  const { isLoginModalOpen, openLoginModal, closeLoginModal } = useStore.userStore.ui.modal();
+  const { openLoginModal } = useStore.userStore.ui.modal();
   const { isLoading, startLoading, stopLoading } = useStore.uiStore.loading();
 
   const handleLogin = () => {
@@ -102,7 +102,7 @@ export default function StateManagement() {
         )}
       </div>
 
-      <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
+      <LoginModal />
     </div>
   );
 }

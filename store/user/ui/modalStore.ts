@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { useUserStore } from '../userStore';
+import { userStore } from '../';
 
 interface ModalState {
   isLoginModalOpen: boolean;
@@ -12,6 +12,6 @@ export const useModalStore = create<ModalState>()((set) => ({
   openLoginModal: () => set({ isLoginModalOpen: true }),
   closeLoginModal: () => {
     set({ isLoginModalOpen: false });
-    useUserStore.getState().clearLoginForm();
+    userStore.user.getState().clearLoginForm();
   },
 }));

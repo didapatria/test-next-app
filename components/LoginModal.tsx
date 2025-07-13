@@ -5,12 +5,7 @@ import { THEME } from '@/types/Theme';
 import { FaEye, FaEyeSlash, FaRegEye, FaRegEyeSlash, FaCheck, FaX } from 'react-icons/fa6';
 import { getPasswordStrengthColor, getPasswordStrengthBgColor } from '@/utils/password';
 
-interface LoginModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export default function LoginModal() {
   const { theme } = useStore.themeStore.theme();
   const {
     loginForm,
@@ -24,36 +19,35 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   } = useStore.userStore.user();
   const { isPasswordVisible, togglePasswordVisibility } =
     useStore.userStore.ui.passwordVisibility();
+  const { isLoginModalOpen, closeLoginModal } = useStore.userStore.ui.modal();
+  const { isLoading } = useStore.uiStore.loading();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setLoginFormData({ [name]: value });
-
-    // Real-time password validation
     if (name === 'password') {
       validatePasswordRealTime(value);
     }
-
-    // Clear username errors when user starts typing
     if (name === 'username' && loginFormErrors.username) {
       setLoginFormErrors({ username: '' });
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (submitLoginForm()) {
-      onClose();
+    if (!isLoading) {
+      await submitLoginForm();
     }
   };
 
   const handleClose = () => {
-    clearLoginForm();
-    onClose();
+    if (!isLoading) {
+      clearLoginForm();
+      closeLoginModal();
+    }
   };
 
-  if (!isOpen) return null;
+  if (!isLoginModalOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -74,11 +68,12 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           </h2>
           <button
             onClick={handleClose}
+            disabled={isLoading}
             className={`text-sm ${
               theme === THEME.DARK
                 ? 'text-gray-300 hover:text-white'
                 : 'text-gray-500 hover:text-gray-700'
-            }`}
+            } disabled:cursor-not-allowed disabled:opacity-50`}
           >
             <FaX />
           </button>
@@ -100,7 +95,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               name="username"
               value={loginForm.username}
               onChange={handleInputChange}
-              className={`w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+              disabled={isLoading}
+              className={`w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 ${
                 theme === THEME.DARK
                   ? `border-gray-600 bg-gray-700 text-white placeholder-gray-400 ${
                       loginFormErrors.username ? 'border-red-500' : 'border-gray-600'
@@ -132,7 +128,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 name="password"
                 value={loginForm.password}
                 onChange={handleInputChange}
-                className={`w-full rounded-md border px-3 py-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+                disabled={isLoading}
+                autoComplete="off"
+                className={`w-full rounded-md border px-3 py-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 ${
                   theme === THEME.DARK
                     ? `border-gray-600 bg-gray-700 text-white placeholder-gray-400 ${
                         loginFormErrors.password.length > 0 ? 'border-red-500' : 'border-gray-600'
@@ -146,7 +144,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className={`absolute inset-y-0 right-3 flex items-center ${
+                disabled={isLoading}
+                className={`absolute inset-y-0 right-3 flex items-center disabled:cursor-not-allowed disabled:opacity-50 ${
                   theme === THEME.DARK
                     ? 'text-gray-400 hover:text-gray-200'
                     : 'text-gray-500 hover:text-gray-700'
@@ -165,7 +164,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 )}
               </button>
             </div>
-            {/* Password Strength Indicator */}
+            {loginFormErrors.password && (
+              <p className="mt-1 text-sm text-red-500">{loginFormErrors.password}</p>
+            )}
             {loginForm.password && (
               <div className="mt-2">
                 <div className="mb-1 flex items-center justify-between">
@@ -242,7 +243,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             <button
               type="button"
               onClick={handleClose}
-              className={`flex-1 rounded-md border px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+              disabled={isLoading}
+              className={`flex-1 rounded-md border px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
                 theme === THEME.DARK
                   ? 'border-gray-600 text-gray-300 hover:bg-gray-700'
                   : 'border-gray-300 text-gray-700 hover:bg-gray-50'
@@ -252,9 +254,36 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             </button>
             <button
               type="submit"
-              className="flex-1 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              disabled={isLoading}
+              className="flex flex-1 items-center justify-center rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-blue-300"
             >
-              Login
+              {isLoading ? (
+                <>
+                  <svg
+                    className="mr-2 -ml-1 h-4 w-4 animate-spin text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Logging in...
+                </>
+              ) : (
+                'Login'
+              )}
             </button>
           </div>
         </form>

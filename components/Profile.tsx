@@ -74,7 +74,7 @@ export default function Profile() {
                   theme === THEME.DARK ? 'text-gray-300' : 'text-gray-600'
                 }`}
               >
-                Username
+                Full Name
               </label>
               <p className="text-lg font-semibold">{user.name}</p>
             </div>

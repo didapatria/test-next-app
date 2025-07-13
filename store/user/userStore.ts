@@ -7,7 +7,9 @@ import {
   PasswordStrength,
   PasswordValidationRule,
 } from '@/utils/password';
-import { useModalStore } from './ui/modalStore';
+import { uiStore as uiUserStore } from './ui';
+import { uiStore } from '../ui';
+import { LoginCredentials, LoginResponse } from '@/types/api';
 
 interface UserState {
   user: {
@@ -24,7 +26,8 @@ interface UserState {
   };
   loginFormErrors: {
     username: string;
-    password: string[];
+    password: string;
+    passwordErrors: string[];
   };
   passwordValidation: {
     isValid: boolean;
@@ -37,15 +40,16 @@ interface UserState {
   setLoginFormErrors: (errors: Partial<UserState['loginFormErrors']>) => void;
   validatePasswordRealTime: (password: string) => void;
   clearLoginForm: () => void;
-  submitLoginForm: () => boolean;
+  submitLoginForm: () => Promise<boolean>;
+  loginWithAPI: (credentials: LoginCredentials) => Promise<boolean>;
 }
 
-export const useUserStore = create<UserState>()(
+const store = create<UserState>()(
   devtools(
     persist(
       (set) => ({
         user: {
-          id: null,
+          id: null as string | null,
           name: '',
           username: '',
           email: '',
@@ -58,7 +62,8 @@ export const useUserStore = create<UserState>()(
         },
         loginFormErrors: {
           username: '',
-          password: [],
+          password: '',
+          passwordErrors: [],
         },
         passwordValidation: {
           isValid: false,
@@ -69,7 +74,7 @@ export const useUserStore = create<UserState>()(
         logout: () =>
           set(() => ({
             user: {
-              id: null,
+              id: null as string | null,
               name: '',
               username: '',
               email: '',
@@ -97,15 +102,16 @@ export const useUserStore = create<UserState>()(
               strength: strength,
             },
             loginFormErrors: {
-              username: useUserStore.getState().loginFormErrors.username,
-              password: validation.errors,
+              username: store.getState().loginFormErrors.username,
+              password: '',
+              passwordErrors: validation.errors,
             },
           }));
         },
         clearLoginForm: () =>
           set(() => ({
             loginForm: { username: '', password: '' },
-            loginFormErrors: { username: '', password: [] },
+            loginFormErrors: { username: '', password: '', passwordErrors: [] },
             passwordValidation: {
               isValid: false,
               errors: [],
@@ -113,54 +119,88 @@ export const useUserStore = create<UserState>()(
               strength: PasswordStrength.WEAK,
             },
           })),
-        submitLoginForm: () => {
-          const state = useUserStore.getState();
-          const { loginForm, passwordValidation } = state;
+        submitLoginForm: async (): Promise<boolean> => {
+          const state = store.getState();
+          const { loginForm } = state;
           const errors = {
             username: '',
-            password: [] as string[],
+            password: '',
+            passwordErrors: [] as string[],
           };
+
           if (!loginForm.username.trim()) {
             errors.username = 'Username is required';
-          } else if (loginForm.username.length < 3) {
-            errors.username = 'Username must be at least 3 characters';
           }
           if (!loginForm.password.trim()) {
-            errors.password = ['Password is required'];
-          } else {
-            errors.password = passwordValidation.errors;
+            errors.password = 'Password is required';
+            errors.passwordErrors = ['Password is required'];
           }
-          useUserStore.setState({ loginFormErrors: errors });
+
+          store.setState({ loginFormErrors: errors });
+
           if (!errors.username && errors.password.length === 0) {
-            try {
-              const hashedPassword = hashPasswordSync(loginForm.password);
-              useUserStore.setState({
-                user: {
-                  id: Date.now().toString(),
-                  name: loginForm.username,
-                  username: loginForm.username,
-                  email: `${loginForm.username}@example.com`,
-                  password: hashedPassword,
-                  isAuthenticated: true,
-                },
-              });
-              useModalStore.getState().closeLoginModal();
-              if (typeof window !== 'undefined') {
-                window.location.href = '/test/profile';
-              }
-              return true;
-            } catch (error) {
-              console.error('Error hashing password:', error);
-              useUserStore.setState({
-                loginFormErrors: {
-                  ...errors,
-                  password: ['Error processing password. Please try again.'],
-                },
-              });
-              return false;
-            }
+            return await store.getState().loginWithAPI(loginForm);
           }
           return false;
+        },
+        loginWithAPI: async (credentials: LoginCredentials) => {
+          uiStore.loading.getState().startLoading();
+
+          try {
+            const response = await fetch('/api/users', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(credentials),
+            });
+
+            const result: LoginResponse = await response.json();
+
+            if (result.success && result.data) {
+              set(() => ({
+                user: {
+                  ...result.data!,
+                  password: hashPasswordSync(credentials.password),
+                  isAuthenticated: true,
+                },
+                loginForm: { username: '', password: '' },
+                loginFormErrors: { username: '', password: '', passwordErrors: [] },
+                passwordValidation: {
+                  isValid: false,
+                  errors: [],
+                  rules: [],
+                  strength: PasswordStrength.WEAK,
+                },
+              }));
+
+              uiStore.toast.getState().showToast('Login successful', 'success', '/test/profile');
+              return true;
+            } else {
+              set(() => ({
+                loginFormErrors: {
+                  username: '',
+                  password: result.message || 'Login failed',
+                  passwordErrors: [],
+                },
+              }));
+              uiStore.toast.getState().showToast(result.message || 'Login failed', 'error');
+              return false;
+            }
+          } catch (error) {
+            console.error('Login error:', error);
+            set(() => ({
+              loginFormErrors: {
+                username: '',
+                password: 'Network error. Please try again.',
+                passwordErrors: [],
+              },
+            }));
+            uiStore.toast.getState().showToast('Network error. Please try again.', 'error');
+            return false;
+          } finally {
+            uiStore.loading.getState().stopLoading();
+          }
         },
       }),
       {
@@ -172,3 +212,13 @@ export const useUserStore = create<UserState>()(
     )
   )
 );
+
+const unsubscribe = store.subscribe((state) => {
+  const isAuthenticated = state.user.isAuthenticated;
+  if (isAuthenticated) {
+    unsubscribe();
+    uiUserStore.modal.getState().closeLoginModal();
+  }
+});
+
+export const useUserStore = store;

@@ -8,7 +8,7 @@ import LoginModal from './LoginModal';
 export default function Navigation() {
   const { theme } = useStore.themeStore.theme();
   const { user } = useStore.userStore.user();
-  const { isLoginModalOpen, openLoginModal, closeLoginModal } = useStore.userStore.ui.modal();
+  const { openLoginModal } = useStore.userStore.ui.modal();
 
   const handleLogin = () => {
     openLoginModal();
@@ -59,7 +59,7 @@ export default function Navigation() {
         </div>
       </div>
 
-      <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
+      <LoginModal />
     </nav>
   );
 }
