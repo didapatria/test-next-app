@@ -11,7 +11,7 @@ export default function Test() {
 
   return (
     <div
-      className={`relative mx-auto flex min-h-screen flex-col items-center justify-center space-y-4 px-4 text-center md:px-0 ${theme === THEME.DARK ? 'text-white' : 'text-gray-900'}`}
+      className={`relative mx-auto flex min-h-[calc(100vh-65px)] flex-col items-center justify-center space-y-4 px-4 text-center md:px-0 ${theme === THEME.DARK ? 'text-white' : 'text-gray-900'}`}
     >
       <RedirectButton
         href="/"
@@ -57,6 +57,54 @@ export default function Test() {
             }`}
           >
             Test 3
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="/test/test4"
+            className={`transition-colors hover:underline ${
+              theme === THEME.DARK
+                ? 'text-blue-400 hover:text-blue-500'
+                : 'text-blue-800 hover:text-blue-900'
+            }`}
+          >
+            Test 4
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="/test/test5"
+            className={`transition-colors hover:underline ${
+              theme === THEME.DARK
+                ? 'text-blue-400 hover:text-blue-500'
+                : 'text-blue-800 hover:text-blue-900'
+            }`}
+          >
+            Test 5
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="/test/test6"
+            className={`transition-colors hover:underline ${
+              theme === THEME.DARK
+                ? 'text-blue-400 hover:text-blue-500'
+                : 'text-blue-800 hover:text-blue-900'
+            }`}
+          >
+            Test 6
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="/test/test7"
+            className={`transition-colors hover:underline ${
+              theme === THEME.DARK
+                ? 'text-blue-400 hover:text-blue-500'
+                : 'text-blue-800 hover:text-blue-900'
+            }`}
+          >
+            Test 7
           </Link>
         </li>
       </ol>

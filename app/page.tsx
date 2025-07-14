@@ -10,7 +10,7 @@ export default function Home() {
 
   return (
     <div
-      className={`relative container mx-auto flex min-h-screen flex-col items-center justify-center space-y-4 px-4 text-center md:px-0 ${
+      className={`relative container mx-auto flex min-h-[calc(100vh-65px)] flex-col items-center justify-center space-y-4 px-4 text-center md:px-0 ${
         theme === THEME.DARK ? 'bg-gray-900' : 'bg-gray-50'
       }`}
     >
@@ -26,7 +26,8 @@ export default function Home() {
           theme === THEME.DARK ? 'text-gray-300' : 'text-slate-500'
         }`}
       >
-        This is a simple Next.js application, intended for technical tests of frontend capabilities.
+        This is a simple Next.js application, intended for practicing state management using
+        Zustand.
       </p>
       <RedirectButton href="/test" direction={DIRECTION.FORWARD} label="Test Page" />
     </div>

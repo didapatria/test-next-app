@@ -44,7 +44,7 @@ export default function RedirectButton({
         </div>
       )}
       <span className="mx-2">
-        {direction === DIRECTION.BACK ? 'Back' : 'Go'} to {label}
+        {`${direction === DIRECTION.BACK ? 'Back' : 'Go'} ${label ? ` to ${label}` : ''}`}
       </span>
       {direction === DIRECTION.FORWARD && (
         <div className={`rounded-full p-2 ${theme === THEME.DARK ? 'bg-gray-800' : 'bg-gray-400'}`}>
